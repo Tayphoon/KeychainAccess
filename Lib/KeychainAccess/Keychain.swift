@@ -520,6 +520,31 @@ public final class Keychain {
 
     // MARK:
 
+    public func attributes<T>(handler: (Attributes?) -> T) throws -> T {
+        var query = options.query()
+
+        query[MatchLimit] = MatchLimitOne
+        query[ReturnData] = kCFBooleanTrue
+        query[ReturnAttributes] = kCFBooleanTrue
+        query[ReturnRef] = kCFBooleanTrue
+        query[ReturnPersistentRef] = kCFBooleanTrue
+
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+        switch status {
+        case errSecSuccess:
+            guard let attributes = result as? [String: Any] else {
+                throw Status.unexpectedError
+            }
+            return handler(Attributes(attributes: attributes))
+        case errSecItemNotFound:
+            return handler(nil)
+        default:
+            throw securityError(status: status)
+        }
+    }
+
     public func get(_ key: String) throws -> String? {
         return try getString(key)
     }
