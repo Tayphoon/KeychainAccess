@@ -386,6 +386,10 @@ public final class Keychain {
         return options.comment
     }
 
+    public var itemDescription: String? {
+        return options.itemDescription
+    }
+
     @available(iOS 8.0, OSX 10.10, *)
     @available(watchOS, unavailable)
     public var authenticationPrompt: String? {
@@ -482,6 +486,12 @@ public final class Keychain {
     public func comment(_ comment: String) -> Keychain {
         var options = self.options
         options.comment = comment
+        return Keychain(options)
+    }
+    
+    public func itemDescription(_ description: String) -> Keychain {
+        var options = self.options
+        options.itemDescription = description
         return Keychain(options)
     }
 
@@ -1074,6 +1084,7 @@ struct Options {
 
     var label: String?
     var comment: String?
+    var itemDescription: String?
 
     var authenticationPrompt: String?
     var authenticationContext: AnyObject?
@@ -1241,6 +1252,9 @@ extension Options {
         }
         if comment != nil {
             attributes[AttributeComment] = comment
+        }
+        if itemDescription != nil {
+            attributes[AttributeDescription] = itemDescription
         }
 
         if let policy = authenticationPolicy {
